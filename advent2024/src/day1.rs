@@ -1,8 +1,7 @@
 use std::{collections::HashMap, iter::zip};
 use counter::Counter;
-use itertools::{Itertools};
+use itertools::Itertools;
 
-// use 
 pub async fn advent_1(data: String) -> usize {
     let mut ret = 0;
     let (mut col1, mut col2) = parse(&data);
@@ -42,10 +41,4 @@ fn parse(data: &str) -> (Vec<usize>, Vec<usize>) {
     });
 
     (col1, col2)
-}
-
-fn count(col: &Vec<usize>) -> HashMap<usize, usize> {
-    let mut ret = HashMap::new();
-
-    ret
 }
