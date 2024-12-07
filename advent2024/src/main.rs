@@ -3,6 +3,7 @@ use std::fs;
 use anyhow::Result;
 use crate::day7::{advent_1, advent_2};
 mod day7;
+mod util;
 
 #[tokio::main]
 async fn main() -> Result<()> {
