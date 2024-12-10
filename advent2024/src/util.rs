@@ -4,6 +4,7 @@ use itertools::Itertools;
 // Grid
 pub type Point = (isize, isize);
 pub type CGrid = HashMap<Point, char>;
+pub type UGrid = HashMap<Point, usize>;
 pub const CARDINAL_DIRECTIONS: [Point; 4] = [(0,-1), (1,0), (0,1), (-1,0)];
 pub const EIGHT_DIRECTIONS: [Point; 8] = [(0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1)];
 pub fn walk_grid(cur: Point, dir: Point) -> Point { (cur.0 + dir.0, cur.1 + dir.1) }
@@ -12,6 +13,15 @@ pub fn parse_cgrid(data: &str) -> CGrid {
     data.split("\n").enumerate().for_each(|(y,line)| {
         line.chars().enumerate().for_each(|(x,c)| {
             grid.insert((x as isize,y as isize), c);
+        })
+    });
+    grid
+}
+pub fn parse_digit_grid(data: &str) -> UGrid {
+    let mut grid = UGrid::new();
+    data.split("\n").enumerate().for_each(|(y,line)| {
+        line.chars().enumerate().for_each(|(x,c)| {
+            grid.insert((x as isize,y as isize), c.to_digit(10).unwrap() as usize);
         })
     });
     grid
