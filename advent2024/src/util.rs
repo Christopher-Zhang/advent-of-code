@@ -7,6 +7,7 @@ pub type CGrid = HashMap<Point, char>;
 pub type UGrid = HashMap<Point, usize>;
 pub const CARDINAL_DIRECTIONS: [Point; 4] = [(0,-1), (1,0), (0,1), (-1,0)];
 pub const EIGHT_DIRECTIONS: [Point; 8] = [(0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1)];
+pub const DIAGONAL_DIRECTIONS: [Point; 4] = [(1,-1), (1,1), (-1,1), (-1,-1)];
 pub fn walk_grid(cur: Point, dir: Point) -> Point { (cur.0 + dir.0, cur.1 + dir.1) }
 pub fn parse_cgrid(data: &str) -> CGrid {
     let mut grid = CGrid::new();
