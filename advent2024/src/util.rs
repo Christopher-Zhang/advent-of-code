@@ -1,8 +1,9 @@
-use std::collections::{HashMap,HashSet};
+use std::{collections::{HashMap,HashSet}};
 use itertools::Itertools;
 
 // Grid
 pub type Point = (isize, isize);
+
 pub type CGrid = HashMap<Point, char>;
 pub type UGrid = HashMap<Point, usize>;
 pub const CARDINAL_DIRECTIONS: [Point; 4] = [(0,-1), (1,0), (0,1), (-1,0)];
