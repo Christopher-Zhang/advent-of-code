@@ -1,8 +1,6 @@
 use std::collections::{HashSet, VecDeque};
 use itertools::Itertools;
-
 use crate::util::*;
-
 
 pub async fn advent_1(data: String) -> usize {
     let grid = parse_digit_grid(&data);

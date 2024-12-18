@@ -15,14 +15,14 @@ async fn main() -> Result<()> {
     println!("Test results: ");
     {
         let now = Instant::now();
-        let result = advent_1(test_data.clone()).await;
-        println!("Final total part 1: {}", result);
+        let result = advent_1(test_data.clone(), true).await;
+        println!("Final total part 1: {:?}", result);
         let elapsed = now.elapsed();
         println!("Part 1 finished in {:.2?}", elapsed);
      
         let now = Instant::now();
-        let result = advent_2(test_data).await;
-        println!("Final total part 2: {}", result);
+        let result = advent_2(test_data, true).await;
+        println!("Final total part 2: {:?}", result);
         let elapsed = now.elapsed();
         println!("Part 2 finished in {:.2?}", elapsed);
     }
@@ -31,14 +31,14 @@ async fn main() -> Result<()> {
         println!();
         println!("Input results: ");
         let now = Instant::now();
-        let result = advent_1(input_data.clone()).await;
-        println!("Final total part 1: {}", result);
+        let result = advent_1(input_data.clone(), false).await;
+        println!("Final total part 1: {:?}", result);
         let elapsed = now.elapsed();
         println!("Part 1 finished in {:.2?}", elapsed);
      
         let now = Instant::now();
-        let result = advent_2(input_data).await;
-        println!("Final total part 2: {}", result);
+        let result = advent_2(input_data, false).await;
+        println!("Final total part 2: {:?}", result);
         let elapsed = now.elapsed();
         println!("Part 2 finished in {:.2?}", elapsed);
     }
