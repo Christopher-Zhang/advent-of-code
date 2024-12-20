@@ -4,13 +4,9 @@ use crate::util::*;
 
 
 pub async fn advent_1(data: String, _test: bool) -> usize {
-    let mut ret = 0;
-
-    ret
+    0
 }
 
 pub async fn advent_2(data: String, _test: bool) -> usize {
-    let mut ret = 0;
-
-    ret
+    0
 }

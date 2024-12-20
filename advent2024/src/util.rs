@@ -137,7 +137,7 @@ pub fn bfs (start: Point, target: Point, grid: &CGrid) -> usize {
             let next = walk_grid(cur_point, dir);
             if !seen.contains_key(&next) {
                 if let Some(next_tile) = grid.get(&next) {
-                    if *next_tile == '.' {
+                    if *next_tile != '#' {
                         q.push_back((next, cur_steps + 1));
                     }
                 }
