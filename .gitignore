@@ -24,3 +24,5 @@ Cargo.lock
 **/test
 *.txt
 **/temp
+
+.vscode
