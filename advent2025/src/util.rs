@@ -61,13 +61,8 @@ pub fn print_grid (grid: &CGrid, seen: Option<&HashSet<Point>>) {
         let mut line = vec![];
         while grid.contains_key(&(x,y)) {
             let mut c = grid.get(&(x,y)).unwrap();
-            match seen {
-                Some(mem) => {
-                    if mem.contains(&(x,y)) {
-                        c = &'X';
-                    }
-                },
-                None => ()
+            if let Some(mem) = seen && mem.contains(&(x,y)) {
+                c = &'X';
             }
 
             print!("{c}");
@@ -76,7 +71,7 @@ pub fn print_grid (grid: &CGrid, seen: Option<&HashSet<Point>>) {
         }
         y += 1;
         x = 0;
-        println!("");
+        println!();
     }
 }
 
@@ -95,10 +90,8 @@ pub fn djikstra (start: Point, target: Point, grid: &CGrid) -> usize {
     while !q.is_empty() {
         let (cur_point, cur_steps) = q.pop().unwrap();
         let cur_steps = -cur_steps;
-        if let Some(steps) = seen.get(&cur_point) {
-            if cur_steps >= *steps {
-                continue;
-            }
+        if let Some(steps) = seen.get(&cur_point)&& cur_steps >= *steps {
+            continue;
         }
         if cur_point == target {
             return cur_steps as usize;
@@ -106,16 +99,12 @@ pub fn djikstra (start: Point, target: Point, grid: &CGrid) -> usize {
         seen.insert(cur_point, cur_steps);
         for dir in CARDINAL_DIRECTIONS {
             let next = walk_grid(cur_point, dir);
-            if !seen.contains_key(&next) {
-                if let Some(next_tile) = grid.get(&next) {
-                    if *next_tile != '#' {
-                        q.push(next, -(cur_steps + 1));
-                    }
-                }
+            if !seen.contains_key(&next) && let Some(next_tile) = grid.get(&next) && *next_tile != '#' {
+                q.push(next, -(cur_steps + 1));
             }
         }
     }
-    return 0;
+    0
 }
 pub fn bfs (start: Point, target: Point, grid: &CGrid) -> usize {
     let mut seen = HashMap::<Point,usize>::new();
@@ -124,10 +113,8 @@ pub fn bfs (start: Point, target: Point, grid: &CGrid) -> usize {
     let mut best = usize::MAX;
     while !q.is_empty() {
         let (cur_point, cur_steps) = q.pop_front().unwrap();
-        if let Some(steps) = seen.get(&cur_point) {
-            if cur_steps >= *steps {
+        if let Some(steps) = seen.get(&cur_point) && cur_steps >= *steps {
                 continue;
-            }
         }
         if cur_point == target {
             best = std::cmp::min(best, cur_steps);
@@ -135,12 +122,8 @@ pub fn bfs (start: Point, target: Point, grid: &CGrid) -> usize {
         seen.insert(cur_point, cur_steps);
         for dir in CARDINAL_DIRECTIONS {
             let next = walk_grid(cur_point, dir);
-            if !seen.contains_key(&next) {
-                if let Some(next_tile) = grid.get(&next) {
-                    if *next_tile != '#' {
-                        q.push_back((next, cur_steps + 1));
-                    }
-                }
+            if !seen.contains_key(&next) && let Some(next_tile) = grid.get(&next) && *next_tile != '#' {
+                q.push_back((next, cur_steps + 1));
             }
         }
     }
