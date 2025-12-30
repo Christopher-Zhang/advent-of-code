@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 use itertools::Itertools;
 use priority_queue::PriorityQueue;
-use crate::util::*;
-
+use z3::{Optimize, SatResult, ast::Int};
 
 pub async fn advent_1(data: String, _test: bool) -> usize {
     let machines = parse(data);
@@ -10,7 +9,7 @@ pub async fn advent_1(data: String, _test: bool) -> usize {
     machines.iter().enumerate().map(|(i, (display, buttons, _))| {
         let mut cache = HashMap::<String, isize>::new();
         let mut q = PriorityQueue::new();
-        q.push((std::iter::repeat(".").take(display.len()).collect::<String>(), String::from("")), 0);
+        q.push((".".repeat(display.len()), String::from("")), 0);
         while let Some(((cur_state, cur_path), cur_steps)) = q.pop() {
             let cur_steps = -cur_steps;
 
@@ -33,7 +32,7 @@ pub async fn advent_1(data: String, _test: bool) -> usize {
                 }
 
                 let state = state.iter().join("");
-                if !cache.contains_key(&state) && !q.contains(&(state.clone(), format!(""))){
+                if !cache.contains_key(&state) && !q.contains(&(state.clone(), String::from(""))){
                     q.push((state, format!("{cur_path} {i}")), -(cur_steps + 1));                }
             }
 
@@ -44,35 +43,37 @@ pub async fn advent_1(data: String, _test: bool) -> usize {
 
 pub async fn advent_2(data: String, _test: bool) -> usize {
     let machines = parse(data);
+    let optimizer = Optimize::new();
 
-    machines.iter().enumerate().map(|(i, (_, buttons, joltage))| {
-        let mut cache = HashMap::<String, isize>::new();
-        let mut q = PriorityQueue::new();
-        q.push((vec![0;joltage.len()], String::from("")), 0);
-        while let Some(((cur_state, cur_path), cur_steps)) = q.pop() {
-            let cur_steps = -cur_steps;
-            let cur_state_str = cur_state.iter().join("");
-            if let Some(steps) = cache.get(&cur_state_str) && cur_steps >= *steps {
-                continue;
-            }
-            if cur_state == *joltage {
-                // println!("FOR LINE {i}, the fewest presses is {cur_steps} to get to {display} by pressing {cur_path}");
-                return cur_steps as usize;
-            }
-            cache.insert(cur_state_str.clone(), cur_steps);
-            for (i,button) in buttons.iter().enumerate() {
-                let mut state = cur_state.clone();
-                for index in button {
-                    state[*index] += 1;
-                }
-                let state_str = state.iter().join("");
+    machines.iter().map(|(_, buttons, joltage)| {
+        let mut formulae: Vec<Vec<usize>> = joltage.iter().map(|_| {vec![]}).collect_vec();
+        let zero = Int::from_i64(0);
+        let button_vars = buttons.iter().enumerate().map(|(button_index, button)| {
+            let var = Int::fresh_const(&format!("{button_index}"));
+            optimizer.assert(&var.ge(&zero));
+            button.iter().for_each(|jolt_index| {
+                formulae[*jolt_index].push(button_index);
+            });
+            var
+        }).collect_vec();
 
-                if !cache.contains_key(&state_str) && !q.contains(&(state.clone(), format!(""))){
-                    q.push((state, format!("{cur_path} {i}")), -(cur_steps + 1));                }
-            }
+        let sum = Int::add(&button_vars.iter().collect::<Vec<_>>());
+        optimizer.minimize(&sum);
 
-        }
-        0
+        formulae.iter().enumerate().for_each(|(jolt_index, formula)| {
+            let sum = Int::add(&formula.iter().map(|&i| &button_vars[i]).collect::<Vec<_>>());
+            optimizer.assert(&sum.eq(Int::from_i64(joltage[jolt_index] as i64)));
+        });
+
+        let total = Int::add(&button_vars.iter().collect::<Vec<_>>());
+        optimizer.minimize(&total);
+        assert!(optimizer.check(&[]) == SatResult::Sat);
+
+        let model = optimizer.get_model().unwrap();
+        let answer = model.eval(&total, true).unwrap().as_u64().unwrap();
+        // println!("For {i} answer is {answer}");
+
+        answer as usize
     }).sum()
 }
 
